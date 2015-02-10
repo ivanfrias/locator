@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Locator</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="save_button">Save</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="cannot_locate">Cannot locate</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="not_specified">Not Specified</string>
+
+</resources>
