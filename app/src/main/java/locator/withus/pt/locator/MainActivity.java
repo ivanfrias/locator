@@ -1,8 +1,11 @@
 package locator.withus.pt.locator;
 
+import android.content.Context;
 import android.location.Location;
+import android.location.LocationManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,7 +29,7 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
 
 
     private GoogleApiClient mGoogleApiClient;
-    private boolean isConnected;
+    private Location lastLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +40,7 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
         Spinner spinner = (Spinner) findViewById(R.id.spinner);
         spinner.setAdapter(adapter);
         buildGoogleApiClient();
+        mGoogleApiClient.connect();
     }
 
 
@@ -80,32 +84,26 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
 
         String gender = (spinner.getSelectedItemId() == GenderPositions.MALE.getPosition()) ? GenderPositions.MALE.getGenderDescription() : GenderPositions.FEMALE.getGenderDescription();
 
-        if (isConnected){
-            Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                    mGoogleApiClient);
-            if (mLastLocation != null) {
-                latitude = mLastLocation.getLatitude();
-                longitude = mLastLocation.getLongitude();
-            }
+        if (lastLocation!=null){
+            latitude = lastLocation.getLatitude();
+            longitude = lastLocation.getLongitude();
+            new SendLocation(this).execute(gender, String.valueOf(latitude), String.valueOf(longitude));
         }else{
             Toast.makeText(this, R.string.cannot_locate,Toast.LENGTH_SHORT);
         }
-
-        new SendLocation().execute(gender, String.valueOf(latitude), String.valueOf(longitude));
     }
 
     @Override
     public void onConnected(Bundle bundle) {
-        isConnected = true;
+        lastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-        isConnected = false;
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        isConnected = false;
     }
 }

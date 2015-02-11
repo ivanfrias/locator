@@ -1,6 +1,11 @@
 package locator.withus.pt.tasks;
 
+import android.app.Application;
+import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
+import android.util.Log;
+import android.widget.Toast;
 
 import org.apache.http.HttpConnection;
 import org.apache.http.HttpMessage;
@@ -33,17 +38,24 @@ import java.util.logging.Logger;
 
 import locator.withus.pt.domain.CommunicationStatus;
 import locator.withus.pt.domain.GenderPositions;
+import locator.withus.pt.locator.MainActivity;
+import locator.withus.pt.locator.MapsActivity;
 
 /**
  * Created by ivanfrias on 20/12/14.
  */
 public class SendLocation extends AsyncTask<String, Integer, Integer>{
 
-    private String locatorWsUrl = "http://192.168.1.88:4567/location";
-    private String gender = "gender";
-    private String latitude = "latitude";
-    private String longitude = "longitude";
-    private static Logger log = Logger.getLogger(SendLocation.class.getName());
+    private String locatorWsUrl = "http://37.59.87.4:8090/mobile/location";
+    private String gender = "Gender";
+    private String latitude = "Lat";
+    private String longitude = "Lng";
+    private String id = "Id";
+    private Context ctx;
+
+    public SendLocation(Context ctx){
+        this.ctx = ctx;
+    }
 
     @Override
     protected Integer doInBackground(String... params) {
@@ -55,7 +67,8 @@ public class SendLocation extends AsyncTask<String, Integer, Integer>{
 
             try {
                 // Add your data
-                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+                nameValuePairs.add(new BasicNameValuePair(id, "X1"));
                 nameValuePairs.add(new BasicNameValuePair(gender, params[0]));
                 nameValuePairs.add(new BasicNameValuePair(latitude, params[1]));
                 nameValuePairs.add(new BasicNameValuePair(longitude, params[2]));
@@ -64,14 +77,22 @@ public class SendLocation extends AsyncTask<String, Integer, Integer>{
                 // Execute HTTP Post Request
                 HttpResponse response = httpclient.execute(httppost);
 
+                Log.d(SendLocation.class.getName(), "Parameters Gender " + params[0]);
+                Log.d(SendLocation.class.getName(), "Parameters Latitude " + params[1]);
+                Log.d(SendLocation.class.getName(), "Parameters Longitude " + params[2]);
+
+                Log.d(SendLocation.class.getName(), "Status " + response.getStatusLine().getStatusCode());
+
                 if (!(response.getStatusLine().getStatusCode() == HttpURLConnection.HTTP_OK)) {
                     statusCode = CommunicationStatus.NOK.getStatusCode();
                 }
 
+                Log.d(SendLocation.class.getName(), "Status Code " + statusCode);
+
             } catch (ClientProtocolException e) {
-                log.log(Level.WARNING, "An error occured " + e.getMessage());
+                Log.e (SendLocation.class.getName(),  "An error occured " + e.getMessage());
             } catch (IOException e) {
-                log.log(Level.WARNING, "An error occured " + e.getMessage());
+                Log.e(SendLocation.class.getName(), "An error occured " + e.getMessage());
             }
         }
         return statusCode;
@@ -80,7 +101,8 @@ public class SendLocation extends AsyncTask<String, Integer, Integer>{
     @Override
     protected void onPostExecute(Integer statusCode) {
         if(statusCode == CommunicationStatus.OK.getStatusCode()){
-            //
+            Intent displayMap = new Intent(ctx, MapsActivity.class);
+            ctx.startActivity(displayMap);
         }
     }
 }
