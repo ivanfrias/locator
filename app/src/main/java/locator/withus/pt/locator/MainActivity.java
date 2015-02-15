@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -76,6 +77,9 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
     }
 
     public void submitGender(View view) {
+        ProgressBar bar = (ProgressBar)findViewById(R.id.progressBar);
+        bar.setVisibility(View.VISIBLE);
+
         Spinner spinner = (Spinner)findViewById(R.id.spinner);
         spinner.getSelectedItemId();
 
@@ -89,7 +93,7 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
             longitude = lastLocation.getLongitude();
             new SendLocation(this).execute(gender, String.valueOf(latitude), String.valueOf(longitude));
         }else{
-            Toast.makeText(this, R.string.cannot_locate,Toast.LENGTH_SHORT);
+            Toast.makeText(this, R.string.cannot_locate, Toast.LENGTH_LONG);
         }
     }
 

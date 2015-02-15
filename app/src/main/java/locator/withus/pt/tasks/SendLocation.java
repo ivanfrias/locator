@@ -52,6 +52,11 @@ public class SendLocation extends AsyncTask<String, Integer, Integer>{
     private String longitude = "Lng";
     private String id = "Id";
     private Context ctx;
+    private String[] params;
+
+    public static String LATITUDE = "latitude";
+    public static String LONGITUDE = "longitude";
+    public static String GENDER = "gender";
 
     public SendLocation(Context ctx){
         this.ctx = ctx;
@@ -60,6 +65,8 @@ public class SendLocation extends AsyncTask<String, Integer, Integer>{
     @Override
     protected Integer doInBackground(String... params) {
         Integer statusCode = CommunicationStatus.OK.getStatusCode();
+        this.params = params;
+
         if (params != null && params.length == 3) {
             // Create a new HttpClient and Post Header
             HttpClient httpclient = new DefaultHttpClient();
@@ -81,13 +88,9 @@ public class SendLocation extends AsyncTask<String, Integer, Integer>{
                 Log.d(SendLocation.class.getName(), "Parameters Latitude " + params[1]);
                 Log.d(SendLocation.class.getName(), "Parameters Longitude " + params[2]);
 
-                Log.d(SendLocation.class.getName(), "Status " + response.getStatusLine().getStatusCode());
-
                 if (!(response.getStatusLine().getStatusCode() == HttpURLConnection.HTTP_OK)) {
                     statusCode = CommunicationStatus.NOK.getStatusCode();
                 }
-
-                Log.d(SendLocation.class.getName(), "Status Code " + statusCode);
 
             } catch (ClientProtocolException e) {
                 Log.e (SendLocation.class.getName(),  "An error occured " + e.getMessage());
@@ -102,6 +105,9 @@ public class SendLocation extends AsyncTask<String, Integer, Integer>{
     protected void onPostExecute(Integer statusCode) {
         if(statusCode == CommunicationStatus.OK.getStatusCode()){
             Intent displayMap = new Intent(ctx, MapsActivity.class);
+            displayMap.putExtra(GENDER, params[0]);
+            displayMap.putExtra(LATITUDE, params[1]);
+            displayMap.putExtra(LONGITUDE, params[2]);
             ctx.startActivity(displayMap);
         }
     }
