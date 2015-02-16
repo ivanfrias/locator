@@ -39,6 +39,7 @@ import java.util.logging.Logger;
 import locator.withus.pt.domain.CommunicationStatus;
 import locator.withus.pt.domain.GenderPositions;
 import locator.withus.pt.locator.MainActivity;
+import locator.withus.pt.locator.MapWithFilterActivity;
 import locator.withus.pt.locator.MapsActivity;
 
 /**
@@ -104,7 +105,7 @@ public class SendLocation extends AsyncTask<String, Integer, Integer>{
     @Override
     protected void onPostExecute(Integer statusCode) {
         if(statusCode == CommunicationStatus.OK.getStatusCode()){
-            Intent displayMap = new Intent(ctx, MapsActivity.class);
+            Intent displayMap = new Intent(ctx, MapWithFilterActivity.class);
             displayMap.putExtra(GENDER, params[0]);
             displayMap.putExtra(LATITUDE, params[1]);
             displayMap.putExtra(LONGITUDE, params[2]);

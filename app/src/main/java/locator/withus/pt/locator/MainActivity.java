@@ -1,26 +1,19 @@
 package locator.withus.pt.locator;
 
-import android.content.Context;
 import android.location.Location;
-import android.location.LocationManager;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.GoogleApiClient.*;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.location.LocationServices;
-
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import locator.withus.pt.domain.GenderPositions;
 import locator.withus.pt.tasks.SendLocation;
@@ -36,10 +29,6 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        String[] genders = {getString(R.string.male), getString(R.string.female)};
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, genders);
-        Spinner spinner = (Spinner) findViewById(R.id.spinner);
-        spinner.setAdapter(adapter);
         buildGoogleApiClient();
         mGoogleApiClient.connect();
     }
@@ -76,22 +65,17 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
         return super.onOptionsItemSelected(item);
     }
 
-    public void submitGender(View view) {
+    private void submitGender(GenderPositions gender) {
         ProgressBar bar = (ProgressBar)findViewById(R.id.progressBar);
         bar.setVisibility(View.VISIBLE);
 
-        Spinner spinner = (Spinner)findViewById(R.id.spinner);
-        spinner.getSelectedItemId();
-
-        double latitude = 0;
-        double longitude = 0;
-
-        String gender = (spinner.getSelectedItemId() == GenderPositions.MALE.getPosition()) ? GenderPositions.MALE.getGenderDescription() : GenderPositions.FEMALE.getGenderDescription();
+        double latitude;
+        double longitude;
 
         if (lastLocation!=null){
             latitude = lastLocation.getLatitude();
             longitude = lastLocation.getLongitude();
-            new SendLocation(this).execute(gender, String.valueOf(latitude), String.valueOf(longitude));
+            new SendLocation(this).execute(gender.getGenderDescription(), String.valueOf(latitude), String.valueOf(longitude));
         }else{
             Toast.makeText(this, R.string.cannot_locate, Toast.LENGTH_LONG);
         }
@@ -109,5 +93,17 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
+    }
+
+    public void setFemale(View view) {
+        submitGender(GenderPositions.FEMALE);
+    }
+
+    public void setMale(View view) {
+        submitGender(GenderPositions.MALE);
+    }
+
+    public void setNotSpecified(View view) {
+        submitGender(GenderPositions.NOT_SPECIFIED);
     }
 }

@@ -1,15 +1,15 @@
 package locator.withus.pt.locator;
 
 import android.content.Intent;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -23,7 +23,7 @@ public class MapsActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
+        setContentView(findViewById(R.id.map));
         Intent intent = getIntent();
         String userLatitude = intent.getStringExtra(SendLocation.LATITUDE);
         String userLongitude = intent.getStringExtra(SendLocation.LONGITUDE);
@@ -31,6 +31,9 @@ public class MapsActivity extends FragmentActivity {
         setUpMapIfNeeded();
         addMarkersToMap(userLatitude, userLongitude, userGender);
     }
+
+
+
 
     @Override
     protected void onResume() {
@@ -57,8 +60,10 @@ public class MapsActivity extends FragmentActivity {
 
         if (GenderPositions.MALE.getGenderDescription().equals(gender)) {
             icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_male);
-        } else {
+        } else if (GenderPositions.FEMALE.getGenderDescription().equals(gender)){
             icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_female);
+        } else{
+            icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_home);
         }
 
         options.icon(icon);
