@@ -1,45 +1,25 @@
 package locator.withus.pt.tasks;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
-import org.apache.http.HttpConnection;
-import org.apache.http.HttpMessage;
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.DefaultHttpServerConnection;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicHttpRequest;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.protocol.HTTP;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import locator.withus.pt.domain.CommunicationStatus;
-import locator.withus.pt.domain.GenderPositions;
-import locator.withus.pt.locator.MainActivity;
-import locator.withus.pt.locator.MapWithFilterActivity;
 import locator.withus.pt.locator.MapsActivity;
 
 /**
@@ -78,16 +58,17 @@ public class SendLocation extends AsyncTask<String, Integer, Integer>{
                 List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
                 nameValuePairs.add(new BasicNameValuePair(id, "X1"));
                 nameValuePairs.add(new BasicNameValuePair(gender, params[0]));
-                nameValuePairs.add(new BasicNameValuePair(latitude, params[1]));
-                nameValuePairs.add(new BasicNameValuePair(longitude, params[2]));
+                nameValuePairs.add(new BasicNameValuePair(latitude, params[1].replace(".", ",")));
+                nameValuePairs.add(new BasicNameValuePair(longitude, params[2].replace(".", ",")));
                 httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
                 // Execute HTTP Post Request
                 HttpResponse response = httpclient.execute(httppost);
 
-                Log.d(SendLocation.class.getName(), "Parameters Gender " + params[0]);
-                Log.d(SendLocation.class.getName(), "Parameters Latitude " + params[1]);
-                Log.d(SendLocation.class.getName(), "Parameters Longitude " + params[2]);
+                nameValuePairs.get(2);
+                Log.d(SendLocation.class.getName(), "Parameters Gender " + nameValuePairs.get(1).getValue());
+                Log.d(SendLocation.class.getName(), "Parameters Latitude " + nameValuePairs.get(2).getValue());
+                Log.d(SendLocation.class.getName(), "Parameters Longitude " + nameValuePairs.get(3).getValue());
 
                 if (!(response.getStatusLine().getStatusCode() == HttpURLConnection.HTTP_OK)) {
                     statusCode = CommunicationStatus.NOK.getStatusCode();
@@ -105,7 +86,7 @@ public class SendLocation extends AsyncTask<String, Integer, Integer>{
     @Override
     protected void onPostExecute(Integer statusCode) {
         if(statusCode == CommunicationStatus.OK.getStatusCode()){
-            Intent displayMap = new Intent(ctx, MapWithFilterActivity.class);
+            Intent displayMap = new Intent(ctx, MapsActivity.class);
             displayMap.putExtra(GENDER, params[0]);
             displayMap.putExtra(LATITUDE, params[1]);
             displayMap.putExtra(LONGITUDE, params[2]);

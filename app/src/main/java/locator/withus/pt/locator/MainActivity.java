@@ -1,5 +1,7 @@
 package locator.withus.pt.locator;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -10,38 +12,57 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
-import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
-import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+
+import java.text.NumberFormat;
+import java.util.Locale;
 
 import locator.withus.pt.domain.GenderPositions;
+import locator.withus.pt.listeners.LocationChangedListener;
 import locator.withus.pt.tasks.SendLocation;
 
 
-public class MainActivity extends ActionBarActivity implements ConnectionCallbacks, OnConnectionFailedListener{
+public class MainActivity extends ActionBarActivity implements LocationChangedListener{
 
-
-    private GoogleApiClient mGoogleApiClient;
-    private Location lastLocation;
+    private LocationRequester requester;
+    private Location lastPosition;
+    private SharedPreferences prefs = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requester = LocationRequester.getInstance(this, this);
         setContentView(R.layout.activity_main);
-        buildGoogleApiClient();
-        mGoogleApiClient.connect();
+        connectToGoogleServices();
+        prefs = getSharedPreferences("locator.withus.pt", MODE_PRIVATE);
     }
 
-
-    protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
+    private void connectToGoogleServices() {
+        int errorCode = requester.servicesAvailable();
+        if(errorCode != ConnectionResult.SUCCESS){
+            GooglePlayServicesUtil.showErrorNotification(errorCode, this);
+            finish();
+        }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        requester.disconnect();
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        requester.connect();
+        if(!prefs.getBoolean("firstrun", true)){
+            Intent displayMap = new Intent(this, MapsActivity.class);
+            displayMap.putExtra(SendLocation.GENDER, prefs.getString(SendLocation.GENDER, ""));
+            this.startActivity(displayMap);
+        }else{
+            prefs.edit().putBoolean("firstrun", false).commit();
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -69,30 +90,13 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
         ProgressBar bar = (ProgressBar)findViewById(R.id.progressBar);
         bar.setVisibility(View.VISIBLE);
 
-        double latitude;
-        double longitude;
+        prefs.edit().putString("GENDER", gender.getGenderDescription()).commit();
 
-        if (lastLocation!=null){
-            latitude = lastLocation.getLatitude();
-            longitude = lastLocation.getLongitude();
-            new SendLocation(this).execute(gender.getGenderDescription(), String.valueOf(latitude), String.valueOf(longitude));
+        if (lastPosition!=null){
+            new SendLocation(this).execute(gender.getGenderDescription(),  Double.toString(lastPosition.getLatitude())  , Double.toString(lastPosition.getLongitude()));
         }else{
             Toast.makeText(this, R.string.cannot_locate, Toast.LENGTH_LONG);
         }
-    }
-
-    @Override
-    public void onConnected(Bundle bundle) {
-        lastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
     }
 
     public void setFemale(View view) {
@@ -105,5 +109,10 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
 
     public void setNotSpecified(View view) {
         submitGender(GenderPositions.NOT_SPECIFIED);
+    }
+
+    @Override
+    public void locationChanged(Location newLocation) {
+        this.lastPosition = newLocation;
     }
 }

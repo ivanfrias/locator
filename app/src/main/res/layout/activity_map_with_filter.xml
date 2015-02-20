@@ -4,36 +4,26 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="locator.withus.pt.locator.MapWithFilterActivity">
+    tools:context=".MapsActivity"
+    android:id="@+id/fragment_container">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-
-        <LinearLayout
+        <fragment
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_weight="1">
-            <CheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent" android:text="@string/male_checkbox"/>
-            <CheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent" android:text="@string/female_checkbox"/>
-            <CheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent" android:text="@string/ns_checkbox"/>
-        </LinearLayout>
+            android:layout_weight="1"
+            android:name="locator.withus.pt.locator.FilterFragment"
+            tools:layout="@layout/fragment_filter" />
 
-        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:layout_weight="9"
+        <fragment
             android:id="@+id/map"
-            tools:context="locator.withus.pt.locator.MapsActivity"
-            android:name="com.google.android.gms.maps.SupportMapFragment"/>
+            android:layout_weight="9"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            class="com.google.android.gms.maps.SupportMapFragment" />
 
     </LinearLayout>
-
 </RelativeLayout>

@@ -12,11 +12,9 @@
     <string name="female">Female</string>
     <string name="not_specified">Not Specified</string>
     <string name="set_ns_button">Not Specified</string>
-    <string name="locator_title">Locator</string>
-    <string name="title_activity_map_with_filter">MapWithFilterActivity</string>
-    <string name="title_activity_maps_activity2">Map</string>
-    <string name="male_checkbox">Male (M)</string>
-    <string name="female_checkbox">Female(F)</string>
-    <string name="ns_checkbox">Not Specified</string>
+    <string name="locator_title">Genndle</string>
+    <string name="male_checkbox">Male</string>
+    <string name="female_checkbox">Female</string>
+    <string name="ns_checkbox">NS</string>
 
 </resources>

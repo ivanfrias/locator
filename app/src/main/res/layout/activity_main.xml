@@ -44,14 +44,6 @@
             android:background="@color/button_material_dark"
             android:layout_marginBottom="5dp" />
 
-        <Button
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/set_ns_button"
-            android:text="@string/set_ns_button"
-            android:onClick="setNotSpecified"
-            android:background="@color/button_material_dark" />
-
         <ProgressBar
             style="?android:attr/progressBarStyleLarge"
             android:layout_width="wrap_content"
